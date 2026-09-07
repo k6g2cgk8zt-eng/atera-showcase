@@ -8,7 +8,8 @@ import { images, reducedMotion } from "@/lib/media";
 const CLIP_HIDDEN = "inset(100% 0% 0% 0%)";
 const CLIP_FRAMED = "inset(12% 6% 28% 24%)";
 const CLIP_CINEMATIC = "inset(0% 0% 22% 0%)";
-const CLIP_FRAMED_MOBILE = "inset(18% 6% 38% 6%)";
+const CLIP_FRAMED_MOBILE = "inset(10% 8% 22% 8%)";
+const CLIP_OPEN_MOBILE = "inset(0% 0% 0% 0%)";
 
 export function Hero() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -68,16 +69,28 @@ export function Hero() {
 
         mm.add("(max-width: 1023px)", () => {
           if (reduce) return;
-          gsap.to(mediaRef.current, {
-            yPercent: 6,
-            ease: "none",
-            scrollTrigger: {
-              trigger: pin,
-              start: "top top",
-              end: "bottom top",
-              scrub: 0.8,
-            },
-          });
+
+          gsap
+            .timeline({
+              scrollTrigger: {
+                trigger: pin,
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.8,
+              },
+            })
+            .to(
+              frameRef.current,
+              { clipPath: CLIP_OPEN_MOBILE, duration: 1, ease: "none" },
+              0,
+            )
+            .to(
+              mediaRef.current,
+              { scale: 1.08, yPercent: 4, duration: 1, ease: "none" },
+              0,
+            )
+            .to(copyRef.current, { autoAlpha: 0, y: -12, duration: 0.4, ease: "none" }, 0)
+            .to(exploreRef.current, { autoAlpha: 0, duration: 0.3, ease: "none" }, 0);
         });
       };
 
@@ -190,8 +203,8 @@ export function Hero() {
         </div>
       </header>
 
-      <section ref={pinRef} className="relative h-auto lg:h-[220vh]">
-        <div className="relative h-dvh overflow-hidden lg:sticky lg:top-0">
+      <section ref={pinRef} className="relative h-[180vh] lg:h-[220vh]">
+        <div className="sticky top-0 h-dvh overflow-hidden">
           <figure
             ref={frameRef}
             className="absolute inset-0 z-0 overflow-hidden [clip-path:inset(100%_0_0_0)]"
@@ -202,7 +215,7 @@ export function Hero() {
                 alt="Contemporary residence with timber soffits, landscaping and a swimming pool"
                 priority
                 sizes="100vw"
-                className="object-cover object-[52%_36%]"
+                className="object-cover object-[46%_40%] lg:object-[52%_36%]"
               />
             </div>
           </figure>

@@ -107,12 +107,13 @@ export function Studio() {
           </ul>
         </div>
 
-        <figure className="relative aspect-[4/5] overflow-hidden lg:col-span-5 lg:col-start-8 lg:mt-[20vh]">
-          <div ref={mediaRef} className="absolute inset-0">
+        <figure className="relative aspect-[5/6] overflow-hidden max-lg:-mx-6 sm:max-lg:-mx-10 lg:col-span-5 lg:col-start-8 lg:mx-0 lg:mt-[20vh] lg:aspect-[4/5]">
+          <div ref={mediaRef} className="absolute inset-0 max-lg:inset-[-4%]">
             <MediaImage
               src={images.studio}
               alt="Evening facade of a contemporary house in timber, stone and glass"
               sizes="(max-width: 1024px) 100vw, 42vw"
+              className="object-cover object-[48%_38%] lg:object-center"
             />
           </div>
         </figure>

@@ -39,17 +39,37 @@ export function Process() {
     const ctx = gsap.context(() => {
       if (reducedMotion()) return;
 
-      gsap.from(root.querySelectorAll("[data-step]"), {
-        y: 20,
-        autoAlpha: 0,
-        duration: 0.9,
-        stagger: 0.12,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: root,
-          start: "top 72%",
-          once: true,
-        },
+      const mm = gsap.matchMedia();
+
+      mm.add("(min-width: 768px)", () => {
+        gsap.from(root.querySelectorAll("[data-step]"), {
+          y: 20,
+          autoAlpha: 0,
+          duration: 0.9,
+          stagger: 0.12,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: root,
+            start: "top 72%",
+            once: true,
+          },
+        });
+      });
+
+      mm.add("(max-width: 767px)", () => {
+        gsap.utils.toArray<HTMLElement>("[data-step]").forEach((step) => {
+          gsap.from(step, {
+            y: 28,
+            autoAlpha: 0,
+            duration: 0.85,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: step,
+              start: "top 88%",
+              once: true,
+            },
+          });
+        });
       });
 
       gsap.fromTo(
@@ -66,6 +86,8 @@ export function Process() {
           },
         },
       );
+
+      return () => mm.revert();
     }, root);
 
     return () => ctx.revert();
@@ -83,7 +105,7 @@ export function Process() {
       <div className="relative mt-16">
         <span
           data-progress
-          className="absolute top-0 left-0 hidden h-px w-full origin-left bg-foreground/35 md:block"
+          className="absolute top-0 left-0 h-px w-full origin-left bg-foreground/35"
         />
         <ol className="grid gap-0 border-t border-foreground/15 md:grid-cols-4">
           {steps.map((step) => (

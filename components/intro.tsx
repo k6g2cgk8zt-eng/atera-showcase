@@ -30,6 +30,8 @@ export function Manifesto() {
       items.forEach((el, index) => {
         const inner = el.querySelector("[data-line-inner]");
         const shift = Number(el.dataset.shift || 0);
+        const mobile = window.matchMedia("(max-width: 1023px)").matches;
+        const travel = mobile ? shift * 0.42 : shift;
 
         gsap.fromTo(
           inner,
@@ -48,9 +50,9 @@ export function Manifesto() {
 
         gsap.fromTo(
           el,
-          { x: shift * 0.2 },
+          { x: travel * 0.2 },
           {
-            x: shift,
+            x: travel,
             ease: "none",
             scrollTrigger: {
               trigger: root,

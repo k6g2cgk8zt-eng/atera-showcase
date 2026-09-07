@@ -29,11 +29,19 @@ export function Cinematic() {
         return;
       }
 
-      gsap.set(frame, { clipPath: "inset(14% 12% 16% 12%)" });
-      gsap.set(media, { scale: 1.08, yPercent: -2 });
-      gsap.set(copy, { autoAlpha: 0, y: 24 });
-
       const build = (desktop: boolean) => {
+        gsap.set(frame, {
+          clipPath: desktop
+            ? "inset(14% 12% 16% 12%)"
+            : "inset(8% 9% 11% 9%)",
+        });
+        gsap.set(media, {
+          scale: desktop ? 1.08 : 1.16,
+          yPercent: desktop ? -2 : 0,
+          xPercent: desktop ? 0 : 9,
+        });
+        gsap.set(copy, { autoAlpha: 0, y: desktop ? 24 : 18 });
+
         const tl = gsap.timeline({
           defaults: { ease: "none" },
           scrollTrigger: {
@@ -59,7 +67,8 @@ export function Cinematic() {
           media,
           {
             scale: 1,
-            yPercent: desktop ? 4 : 2,
+            yPercent: desktop ? 4 : 3,
+            xPercent: desktop ? 0 : -11,
             duration: 1.35,
           },
           0,
@@ -99,13 +108,13 @@ export function Cinematic() {
   return (
     <section
       ref={rootRef}
-      className="relative bg-foreground lg:h-[260vh] max-lg:h-[180vh]"
+      className="relative bg-foreground max-lg:h-[220vh] lg:h-[260vh]"
     >
       <div data-pin className="relative h-dvh overflow-hidden bg-foreground">
         <figure data-frame className="absolute inset-0 overflow-hidden">
           <div
             data-media
-            className="absolute inset-[-4%] origin-[52%_42%] will-change-transform"
+            className="absolute inset-[-4%] origin-[52%_42%] will-change-transform max-lg:inset-[-8%_-26%] max-lg:origin-[42%_40%]"
           >
             <Image
               src={images.cinematic}
@@ -114,7 +123,7 @@ export function Cinematic() {
               preload
               sizes="100vw"
               quality={85}
-              className="object-cover"
+              className="object-cover max-lg:object-[42%_40%]"
             />
           </div>
         </figure>
@@ -124,7 +133,7 @@ export function Cinematic() {
             <span
               key={line}
               data-line
-              className="block font-serif text-[clamp(1.85rem,4.6vw,4.25rem)] uppercase leading-[0.9] tracking-[-0.03em] text-background"
+              className="block font-serif text-[clamp(2.05rem,9vw,3.4rem)] uppercase leading-[0.9] tracking-[-0.03em] text-background lg:text-[clamp(1.85rem,4.6vw,4.25rem)]"
             >
               {line}
             </span>

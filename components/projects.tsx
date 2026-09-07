@@ -14,6 +14,7 @@ const projects = [
     src: images.casaAlma,
     alt: "Twilight pool terrace of Casa Alma in Palm Beach",
     layout: "full" as const,
+    pan: true,
   },
   {
     id: "02",
@@ -23,6 +24,7 @@ const projects = [
     src: images.desertHouse,
     alt: "Desert House, a contemporary residence in Scottsdale",
     layout: "offset" as const,
+    pan: false,
   },
   {
     id: "03",
@@ -32,6 +34,7 @@ const projects = [
     src: images.villaNorte,
     alt: "Villa Norte, a Miami residence ordered around outdoor rooms",
     layout: "bleed" as const,
+    pan: true,
   },
 ];
 
@@ -43,6 +46,7 @@ export function Projects() {
     if (!root) return;
 
     registerGsapPlugins();
+    const mm = gsap.matchMedia();
 
     const ctx = gsap.context(() => {
       const reduce = reducedMotion();
@@ -68,6 +72,30 @@ export function Projects() {
           );
         });
       }
+
+      mm.add("(max-width: 1023px)", () => {
+        if (reduce) return;
+
+        articles.forEach((article) => {
+          const hover = article.querySelector<HTMLElement>("[data-hover]");
+          if (!hover || article.dataset.pan !== "true") return;
+
+          gsap.fromTo(
+            hover,
+            { xPercent: 6 },
+            {
+              xPercent: -8,
+              ease: "none",
+              scrollTrigger: {
+                trigger: article,
+                start: "top 85%",
+                end: "bottom 35%",
+                scrub: 0.9,
+              },
+            },
+          );
+        });
+      });
 
       if (reduce || !isFinePointer()) return;
 
@@ -109,7 +137,10 @@ export function Projects() {
       });
     }, root);
 
-    return () => ctx.revert();
+    return () => {
+      mm.revert();
+      ctx.revert();
+    };
   }, []);
 
   return (
@@ -118,23 +149,27 @@ export function Projects() {
         Selected work
       </p>
 
-      <div className="mt-16 space-y-[18vh]">
+      <div className="mt-16 space-y-[18vh] max-lg:space-y-[14vh]">
         {projects.map((project) => (
-          <article key={project.name} data-project>
+          <article
+            key={project.name}
+            data-project
+            data-pan={project.pan ? "true" : "false"}
+          >
             {project.layout === "full" && (
               <div>
                 <figure
                   data-cursor="view"
                   data-cursor-label="View"
-                  className="relative aspect-[16/10] overflow-hidden"
+                  className="relative h-[72vh] overflow-hidden lg:h-auto lg:aspect-[16/10]"
                 >
-                  <div data-media className="absolute inset-[-5%]">
-                    <div data-hover className="absolute inset-0">
+                  <div data-media className="absolute inset-[-5%] max-lg:inset-[-8%_-22%]">
+                    <div data-hover className="absolute inset-0 will-change-transform">
                       <MediaImage
                         src={project.src}
                         alt={project.alt}
                         sizes="100vw"
-                        className="object-cover"
+                        className="object-cover object-[58%_46%] lg:object-center"
                       />
                     </div>
                   </div>
@@ -145,7 +180,7 @@ export function Projects() {
                   </p>
                   <h2
                     data-title
-                    className="mt-3 font-serif text-[clamp(2.4rem,6vw,5.5rem)] uppercase leading-[0.86] tracking-[-0.03em]"
+                    className="mt-3 font-serif text-[clamp(2.4rem,11vw,5.5rem)] uppercase leading-[0.86] tracking-[-0.03em] lg:text-[clamp(2.4rem,6vw,5.5rem)]"
                   >
                     {project.name}
                   </h2>
@@ -160,14 +195,14 @@ export function Projects() {
             )}
 
             {project.layout === "offset" && (
-              <div className="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-8">
-                <div className="lg:col-span-4 lg:pb-4">
+              <div className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-8">
+                <div className="max-lg:max-w-[22rem] lg:col-span-4 lg:pb-4">
                   <p className="text-[11px] tracking-[0.22em] text-foreground/45">
                     {project.id}
                   </p>
                   <h2
                     data-title
-                    className="mt-3 font-serif text-[clamp(2.2rem,5vw,4.5rem)] uppercase leading-[0.86] tracking-[-0.03em]"
+                    className="mt-3 font-serif text-[clamp(2.2rem,10vw,4.5rem)] uppercase leading-[0.86] tracking-[-0.03em] lg:text-[clamp(2.2rem,5vw,4.5rem)]"
                   >
                     {project.name}
                   </h2>
@@ -181,7 +216,7 @@ export function Projects() {
                 <figure
                   data-cursor="view"
                   data-cursor-label="View"
-                  className="relative aspect-[4/5] overflow-hidden lg:col-span-7 lg:col-start-6 lg:aspect-[5/6]"
+                  className="relative aspect-[4/5] overflow-hidden max-lg:-mx-6 max-lg:aspect-[3/4] sm:max-lg:-mx-10 lg:col-span-7 lg:col-start-6 lg:mx-0 lg:aspect-[5/6]"
                 >
                   <div data-media className="absolute inset-[-5%]">
                     <div data-hover className="absolute inset-0">
@@ -189,7 +224,7 @@ export function Projects() {
                         src={project.src}
                         alt={project.alt}
                         sizes="(max-width: 1024px) 100vw, 58vw"
-                        className="object-cover"
+                        className="object-cover object-[72%_46%] lg:object-center"
                       />
                     </div>
                   </div>
@@ -202,15 +237,15 @@ export function Projects() {
                 <figure
                   data-cursor="view"
                   data-cursor-label="View"
-                  className="relative h-[72vh] min-h-[28rem] overflow-hidden"
+                  className="relative h-[86vh] min-h-[34rem] overflow-hidden lg:h-[72vh] lg:min-h-[28rem]"
                 >
-                  <div data-media className="absolute inset-[-5%]">
-                    <div data-hover className="absolute inset-0">
+                  <div data-media className="absolute inset-[-5%] max-lg:inset-[-6%_-16%]">
+                    <div data-hover className="absolute inset-0 will-change-transform">
                       <MediaImage
                         src={project.src}
                         alt={project.alt}
                         sizes="100vw"
-                        className="object-cover"
+                        className="object-cover object-[46%_58%] lg:object-center"
                       />
                     </div>
                   </div>
@@ -220,7 +255,7 @@ export function Projects() {
                     </p>
                     <h2
                       data-title
-                      className="mt-3 font-serif text-[clamp(2.4rem,6vw,5.5rem)] uppercase leading-[0.86] tracking-[-0.03em] text-background [text-shadow:0_8px_40px_rgba(26,22,18,0.35)]"
+                      className="mt-3 font-serif text-[clamp(2.4rem,11vw,5.5rem)] uppercase leading-[0.86] tracking-[-0.03em] text-background [text-shadow:0_8px_40px_rgba(26,22,18,0.35)] lg:text-[clamp(2.4rem,6vw,5.5rem)]"
                     >
                       {project.name}
                     </h2>

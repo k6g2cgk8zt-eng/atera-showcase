@@ -1,7 +1,8 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
-import { gsap } from "@/lib/gsap";
+import { MediaImage } from "@/components/media-image";
+import { gsap, registerGsapPlugins } from "@/lib/gsap";
 import { images, isFinePointer, reducedMotion } from "@/lib/media";
 
 const services = [
@@ -10,30 +11,40 @@ const services = [
     copy: "Site, planting and the ground plane — from arrival to the last terrace.",
     src: images.practiceLandscape,
     alt: "Landscape planting as structure",
+    object: "object-[50%_58%]",
+    aspect: "aspect-[4/3]",
   },
   {
     name: "Outdoor Architecture",
     copy: "Pavilions, walls, stairs and shade structures with the discipline of the house.",
     src: images.practiceArchitecture,
     alt: "Contemporary outdoor architecture at dusk",
+    object: "object-[48%_40%]",
+    aspect: "aspect-[5/6]",
   },
   {
     name: "Pool Environments",
     copy: "Water as a room: edge, depth, reflection and the way the body meets it.",
     src: images.practicePool,
     alt: "A still swimming pool as an outdoor room",
+    object: "object-[50%_55%]",
+    aspect: "aspect-[4/3]",
   },
   {
     name: "Outdoor Kitchens",
     copy: "Cooking, dining and lingering, composed as one sequence of use.",
     src: images.practiceKitchen,
     alt: "A refined kitchen opening to the garden",
+    object: "object-[52%_48%]",
+    aspect: "aspect-[5/4]",
   },
   {
     name: "Lighting + Material Direction",
     copy: "Surfaces and light that hold through the day and into the evening.",
     src: images.practiceLight,
     alt: "Warm interior light looking toward the landscape",
+    object: "object-[50%_42%]",
+    aspect: "aspect-[5/4]",
   },
 ];
 
@@ -45,8 +56,38 @@ export function Services() {
   useLayoutEffect(() => {
     const root = rootRef.current;
     const preview = previewRef.current;
-    if (!root || !preview) return;
-    if (!isFinePointer() || reducedMotion()) return;
+    if (!root) return;
+
+    registerGsapPlugins();
+    const mm = gsap.matchMedia();
+    const reduce = reducedMotion();
+
+    mm.add("(max-width: 1023px)", () => {
+      if (reduce) return;
+
+      const figures = root.querySelectorAll<HTMLElement>("[data-practice-media]");
+      figures.forEach((figure) => {
+        const media = figure.querySelector<HTMLElement>("[data-practice-inner]");
+        gsap.set(figure, { clipPath: "inset(100% 0% 0% 0%)" });
+        gsap.set(media, { scale: 1.08 });
+
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: figure,
+              start: "top 88%",
+              end: "top 52%",
+              scrub: 0.65,
+            },
+          })
+          .to(figure, { clipPath: "inset(0% 0% 0% 0%)", ease: "none" }, 0)
+          .to(media, { scale: 1, ease: "none" }, 0);
+      });
+    });
+
+    if (!preview || !isFinePointer() || reduce) {
+      return () => mm.revert();
+    }
 
     gsap.set(preview, { autoAlpha: 0, x: 0, y: 0 });
 
@@ -77,6 +118,7 @@ export function Services() {
     });
 
     return () => {
+      mm.revert();
       rows.forEach((row) => {
         row.removeEventListener("mouseenter", onEnter);
         row.removeEventListener("mousemove", onMove);
@@ -108,6 +150,22 @@ export function Services() {
               <h3 className="font-serif text-[clamp(1.6rem,3.2vw,2.75rem)] leading-[1.05] tracking-[-0.02em] transition-transform duration-500 ease-out group-hover:translate-x-2">
                 {service.name}
               </h3>
+              <figure
+                data-practice-media
+                className={`relative col-span-2 mt-2 overflow-hidden md:col-span-3 lg:hidden ${service.aspect}`}
+              >
+                <div
+                  data-practice-inner
+                  className="absolute inset-0 origin-center will-change-transform"
+                >
+                  <MediaImage
+                    src={service.src}
+                    alt={service.alt}
+                    sizes="100vw"
+                    className={`object-cover ${service.object}`}
+                  />
+                </div>
+              </figure>
               <p className="col-span-2 max-w-[26rem] text-[13px] leading-7 text-foreground/65 transition-transform duration-500 ease-out md:col-span-1 md:justify-self-end md:text-right md:opacity-70 md:group-hover:translate-x-[-6px] md:group-hover:opacity-100">
                 {service.copy}
               </p>
